@@ -1,12 +1,19 @@
 ## reading data from various sources
 import os
 import sys
+from src.components import model_trainer
 from src.logger import logging
 from src.exception import CustomException
+from src.components.data_transfromation import DataTransformation
+from src.utils import save_object
+from src.components.data_transfromation import DataTransformationConfig
+from src.components.model_trainer import ModelTrainer
+from src.components.model_trainer import ModelTrainerConfig
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
+
 
 @dataclass
 class DataIngestionConfig:
@@ -46,5 +53,12 @@ class DataIngestion:
         
 if __name__=="__main__":
     obj = DataIngestion()
-    obj.intiate_data_ingestion()
+    train_path,test_path=obj.intiate_data_ingestion()
+    
+    data_transformation=DataTransformation()
+    train_arr,test_arr,preprocessor_path=data_transformation.intiate_data_tranformation(train_path,test_path)
+    
+    modeltrainer=ModelTrainer()
+    best_r2_score,best_model_name=modeltrainer.initiate_model_trainer(train_arr,test_arr)
+    print(f"Best model found , Model name : {best_model_name} , R2 score : {best_r2_score}")
               
